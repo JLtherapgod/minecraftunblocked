@@ -1,126 +1,222 @@
-<html><head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
-          <title>Release 1.12.2</title>
-          <link rel="icon" href="/favicon.png">
-          <style>
-            body, html { margin: 0px; width: 100%; height: 100%; overflow: hidden; background-color: black; }
-            #game_frame { width: 100vw; height: 100vh; }
-          </style>
-          
-        </head>
-        <body>
-          <div id="game_frame" style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" class="_eaglercraftX_root_element"><div class="_eaglercraftX_wrapper_element" style="position: relative; width: 100%; height: 100%; overflow: hidden;"><canvas class="_eaglercraftX_canvas_element" width="1280" height="658" style="width: 100%; height: 100%; z-index: 1; image-rendering: pixelated; touch-action: pan-x pan-y; -webkit-tap-highlight-color: rgba(255, 255, 255, 0); cursor: default;"></canvas></div></div>
-          <script>
-            (function() {
-              const baseDomain = "https://eaglercraft.com";
-              const prefix = "Eaglercraft 1.12_";
-              const raw = window.localStorage;
-              
-              const proxy = new Proxy(raw, {
-                get(t, p) {
-                  if (p === "setItem") return (k, v) => t.setItem(prefix + k, v);
-                  if (p === "getItem") return (k) => t.getItem(prefix + k);
-                  if (p === "removeItem") return (k) => t.removeItem(prefix + k);
-                  if (p === "clear") return () => {
-                    Object.keys(t).forEach(k => { if(k.startsWith(prefix)) t.removeItem(k); });
-                  };
-                  if (typeof p === "string" && !t[p]) return t.getItem(prefix + p);
-                  return t[p];
-                },
-                set(t, p, v) { if (typeof p === "string") { t.setItem(prefix + p, String(v)); return true; } return false; }
-              });
-              Object.defineProperty(window, "localStorage", { value: proxy });
-              
-              window.addEventListener("message", (e) => {
-                if (e.data.type === "EAGLER_TOGGLE_FULLSCREEN") {
-                  const el = document.documentElement;
-                  if (!document.fullscreenElement) {
-                    el.requestFullscreen().catch(err => console.error("Fullscreen Error:", err));
-                  } else {
-                    document.exitFullscreen();
-                  }
-                }
-              });
+<html lang="en"><head>
+    <title>Eaglercraft</title>
+    <meta name="description" content="Play Eaglercraft, a Javascript port of the original Minecraft 1.5.2 game for modern browsers. EaglercraftX is based on Minecraft 1.8.8.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="https://minecraftforfreex.com/eaglercraft/">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://minecraftforfreex.com/css/main.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <script src="https://pagead2.googlesyndication.com/pagead/managed/js/adsense/m202605210101/show_ads_impl_fy2021.js?bust=31098745"></script><script async="" src="//www.google-analytics.com/analytics.js"></script><script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function() {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+          m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+      ga('create', 'UA-70337607-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+	<!-- Google tag (gtag.js) -->
+	<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-80SFHYWE59"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
 
-              const token = "fb320ef2-bc30-4725-a376-34b7390c1db0";
-              const parent = window.opener;
-              
-              
-              
-              // idle screen tracking
-              const idleScreens = ["net.minecraft.client.gui.GuiMainMenu","net.minecraft.client.gui.GuiMultiplayer","net.minecraft.client.gui.GuiSelectWorld","net.minecraft.client.gui.GuiDisconnected"];
-              const maxIdleTime = 3600000;
-              let idleTimeout = null;
-              
-              window.addEventListener("gameScreenChanged", (event) => {
-                if (event.detail && event.detail.screenName) {
-                  const screenName = event.detail.screenName;
-                  
-                  if (parent && !parent.closed) {
-                    parent.postMessage({ 
-                      type: "gameScreenChanged", 
-                      screenName: screenName 
-                    }, baseDomain);
-                  }
-                  
-                  if (idleTimeout) {
-                    clearTimeout(idleTimeout);
-                    idleTimeout = null;
-                  }
-                  
-                  if (idleScreens.includes(screenName)) {
-                    idleTimeout = setTimeout(() => {
-                      window.onbeforeunload = null;
-                      window.location.href = baseDomain;
-                      if (parent && !parent.closed) {
-                        parent.postMessage({ type: "gameClientIdleClosed", screenName: screenName }, baseDomain);
-                      }
-                    }, maxIdleTime);
-                  }
-                }
-              });
+	  gtag('config', 'G-80SFHYWE59');
 
-              // ws stuff
-              const wsUrl = "wss://eaglercraft-counter.eaglercraft-99f.workers.dev/api/live-player-count/ws?role=player";
-              let wsAttempts = 0;
-              function connectWS() {
-                const ws = new WebSocket(wsUrl);
-                ws.onopen = () => { wsAttempts = 0; };
-                ws.onmessage = (e) => {
-                  try {
-                    const data = JSON.parse(e.data);
-                    if (data.type === "ping") {
-                      ws.send(JSON.stringify({ type: "pong" }));
-                    }
-                  } catch(err){}
-                };
-                ws.onclose = () => {
-                  const delay = Math.min(
-                    1000 * Math.pow(2, wsAttempts),
-                    30000
-                  );
-                  wsAttempts++;
-                  setTimeout(connectWS, delay);
-                };
-              }
-              connectWS();
-              
-              window.addEventListener("message", (e) => {
-                if (e.data.type === "EAGLER_LAUNCH") {
-                  const s = document.createElement("script");
-                  s.src = "blob:https://eaglercraft.com/01e6c52e-9884-4380-9b28-8315268d13e5";
-                  
-                  document.body.appendChild(s);
-                  
-                  window.dispatchEvent(new Event("boot_client"));
-                }
-              });
+	</script>
+	
+	<link rel="preconnect" href="//kelpmetorealiuk.com"><link rel="preconnect" href="//yronesefurther.org"><link rel="preconnect" href="//ghabovethec.info">
+	
+	<!--
+	<script type="text/javascript" src="//monu.delivery/site/0/2/a98778-cc2e-4381-9216-949e687c420c.js" data-cfasync="false"></script>
+-->	
+	<!--
+	<script src="https://gekeebsirs.com/tag.min.js?t=1729389189415" data-zone="8267008"></script>
+	-->
+  <meta http-equiv="origin-trial" content="AlK2UR5SkAlj8jjdEc9p3F3xuFYlF6LYjAML3EOqw1g26eCwWPjdmecULvBH5MVPoqKYrOfPhYVL71xAXI1IBQoAAAB8eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3NTgwNjcxOTksImlzU3ViZG9tYWluIjp0cnVlfQ=="><meta http-equiv="origin-trial" content="Amm8/NmvvQfhwCib6I7ZsmUxiSCfOxWxHayJwyU1r3gRIItzr7bNQid6O8ZYaE1GSQTa69WwhPC9flq/oYkRBwsAAACCeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3NTgwNjcxOTksImlzU3ViZG9tYWluIjp0cnVlfQ=="><meta http-equiv="origin-trial" content="A9nrunKdU5m96PSN1XsSGr3qOP0lvPFUB2AiAylCDlN5DTl17uDFkpQuHj1AFtgWLxpLaiBZuhrtb2WOu7ofHwEAAACKeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A93bovR+QVXNx2/38qDbmeYYf1wdte9EO37K9eMq3r+541qo0byhYU899BhPB7Cv9QqD7wIbR1B6OAc9kEfYCA4AAACQeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A1S5fojrAunSDrFbD8OfGmFHdRFZymSM/1ss3G+NEttCLfHkXvlcF6LGLH8Mo5PakLO1sCASXU1/gQf6XGuTBgwAAACQeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><link rel="preconnect" href="//oundhertobeconsist.org"><link rel="preconnect" href="//yronesefurther.org"><script async="" src="https://fundingchoicesmessages.google.com/i/ca-pub-6919167857759480?href=https%3A%2F%2Fminecraftforfreex.com%2Feaglercraft&amp;ers=2"></script><script src="https://www.google.com/adsense/search/async-ads.js"></script><style id="ar1004ebdc558style">
+				.ar1004ebdc558hidden{ position:absolute !important; opacity:0 !important; pointer-events:none !important}
+			</style><script async="" src="https://fundingchoicesmessages.google.com/f/AGSKWxWPfrufn0VwIxc2mZ4UAIJg4BHRAQbtg57wyclSyNz8Kp23p5TagRD4BBXndgIAKpUsSjxErkYVHTtSpFtvnCka3fVzDf-i_cBVfGDIQyq_gpl3qkz7wpossQ7bI3KKZLNnIgi4Tw==?fccs=W1siQUtzUm9sOEw3YlFJMkhsNkxvb2N3cVVpbjd2a29zNGRxbF9oS2pidW9MUTFodUFJSFdwT18wbXhpZGltQUNhMmFkTmtNVVpnQ2NVbWgxQXpOVy1JRk91eU1WZnFobEhWUUgydlRJN3dtMFQ4U1lMQVBCenI0b1hBQmt1OG5ZR2dlVElKUmR5VDZQLXB4OUFaQVZaLWwzd2tLWXdWOEd1NnBBPT0iXSxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsWzE3Nzk2ODc3ODIsMTM2MDAwMDAwXSxudWxsLG51bGwsbnVsbCxbbnVsbCxbN11dLCJodHRwczovL21pbmVjcmFmdGZvcmZyZWV4LmNvbS9lYWdsZXJjcmFmdC8iLG51bGwsW1s4LCJLaDRueDdtZTZfNCJdLFs5LCJlbi1VUyJdLFsxOCwiW1tbbnVsbCw0NzFdXV0iXSxbMjMsIjE3Nzk2NzA2MDQiXSxbMzUsIjE3Nzk2NzA2MDQiXSxbMTksIjIiXSxbMTcsIlswXSJdLFsyNCwibWluZWNyYWZ0Zm9yZnJlZXguY29tIl0sWzI5LCJmYWxzZSJdXV0"></script><link rel="preconnect" href="//kelpmetorealiuk.com"><link rel="preconnect" href="//yronesefurther.org"><link rel="preconnect" href="//ghabovethec.info"><script async="" src="https://fundingchoicesmessages.google.com/f/AGSKWxV0AiOBM5FDxv0-weXJFUeJNUin5wmqZ0M3LhQT6FGP1YJmh2r4EjHVo7VTw3qEhaBHuWReaZopVa8J2j7zA7qCPT9jX-l-mSIIFVmeTzRQWy0B7o9-WvdMpH7Zs2gjSqH1BaieVQ==?fccs=W1siQUtzUm9sOEw3YlFJMkhsNkxvb2N3cVVpbjd2a29zNGRxbF9oS2pidW9MUTFodUFJSFdwT18wbXhpZGltQUNhMmFkTmtNVVpnQ2NVbWgxQXpOVy1JRk91eU1WZnFobEhWUUgydlRJN3dtMFQ4U1lMQVBCenI0b1hBQmt1OG5ZR2dlVElKUmR5VDZQLXB4OUFaQVZaLWwzd2tLWXdWOEd1NnBBPT0iXSxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsWzE3Nzk2ODc3ODIsMjA2MDAwMDAwXSxudWxsLG51bGwsbnVsbCxbbnVsbCxbNyw5XSxudWxsLDIsbnVsbCwiZW4iXSwiaHR0cHM6Ly9taW5lY3JhZnRmb3JmcmVleC5jb20vZWFnbGVyY3JhZnQvIixudWxsLFtbOCwiS2g0bng3bWU2XzQiXSxbOSwiZW4tVVMiXSxbMTgsIltbW251bGwsNDcxXV1dIl0sWzIzLCIxNzc5NjcwNjA0Il0sWzM1LCIxNzc5NjcwNjA0Il0sWzE5LCIyIl0sWzE3LCJbMF0iXSxbMjQsIm1pbmVjcmFmdGZvcmZyZWV4LmNvbSJdLFsyOSwiZmFsc2UiXV1d"></script><script async="" src="https://fundingchoicesmessages.google.com/f/AGSKWxX5l9-xUZo-4JFC4JxJkNZJ125Xb2K0pI508EDnMc41OVhDfgvJvisMKd6MmOOSQL52YZOQp-Fa3Pt-ReI9xsS-5XF23VPertHdc1HecdnaVh-7QLPxrYuM4tZnuJOU9azasIiMoQ==?fccs=W1siQUtzUm9sOEw3YlFJMkhsNkxvb2N3cVVpbjd2a29zNGRxbF9oS2pidW9MUTFodUFJSFdwT18wbXhpZGltQUNhMmFkTmtNVVpnQ2NVbWgxQXpOVy1JRk91eU1WZnFobEhWUUgydlRJN3dtMFQ4U1lMQVBCenI0b1hBQmt1OG5ZR2dlVElKUmR5VDZQLXB4OUFaQVZaLWwzd2tLWXdWOEd1NnBBPT0iXSxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsWzE3Nzk2ODc3ODIsOTU1MDAwMDAwXSxudWxsLG51bGwsbnVsbCxbbnVsbCxbNyw5LDZdLG51bGwsMixudWxsLCJlbiIsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLDFdLCJodHRwczovL21pbmVjcmFmdGZvcmZyZWV4LmNvbS9lYWdsZXJjcmFmdC8iLG51bGwsW1s4LCJLaDRueDdtZTZfNCJdLFs5LCJlbi1VUyJdLFsxOCwiW1tbbnVsbCw0NzFdXV0iXSxbMjMsIjE3Nzk2NzA2MDQiXSxbMzUsIjE3Nzk2NzA2MDQiXSxbMTksIjIiXSxbMTcsIlswXSJdLFsyNCwibWluZWNyYWZ0Zm9yZnJlZXguY29tIl0sWzI5LCJmYWxzZSJdXV0"></script></head>
+  <body class="noscroll">
+    <div id="wrap">
+      <div id="main" class="clear-top">
+        <nav class="navbar navbar-default navbar-inverse navbar-static-top hide">
+          <div class="container">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+              <div class="navbar-header">
+                <a class="navbar-brand" href="https://minecraftforfreex.com/">
+                  <img class="img-responsive" src="https://minecraftforfreex.com/images/logo.png" width="263" height="74">
+                </a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-collapse" aria-expanded="false">
+                  <span class="sr-only">Toggle Navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+              </div>
+              <div class="collapse navbar-collapse" id="nav-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                  <li>
+                    <a class="mc-btn nav-btn" href="/eaglercraft/">Play</a>
+                  </li>
+                  <li>
+                    <a class="mc-btn nav-btn" href="/games/">Games</a>
+                  </li>
+                  <li>
+                    <a class="mc-btn nav-btn" href="/help/">Help</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-2"></div>
+          </div>
+        </nav>
+        <div class="container">
+          <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 filled">
+              <div class="hbox text-center">
+                <h1>Eaglercraft</h1>
+              </div>
+              <div class="leaderboard-top">
+                <!-- MFFX LB1 Game -->
+                <ins class="adsbygoogle hide" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-6919167857759480" data-ad-slot="7932928642" data-adsbygoogle-status="done" data-ad-status="filled"><div id="aswift_0_host" style="border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; height: 90px; width: 728px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block;"><iframe id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;border:0;width:728px;height:90px;min-height:auto;max-height:none;min-width:auto;max-width:none;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="728" height="90" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allow="attribution-reporting; run-ad-auction" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-6919167857759480&amp;output=html&amp;h=90&amp;slotname=7932928642&amp;adk=2426755099&amp;adf=958344810&amp;pi=t.ma~as.7932928642&amp;w=728&amp;lmt=1778712364&amp;format=728x90&amp;url=https%3A%2F%2Fminecraftforfreex.com%2Feaglercraft%2F&amp;asro=0&amp;aiactd=0&amp;aicctd=0&amp;ailctd=0&amp;aimartd=4&amp;aieuf=1&amp;aicrs=1&amp;uach=WyJXaW5kb3dzIiwiMTkuMC4wIiwieDg2IiwiIiwiMTMxLjAuNTg3Ny41NyIsbnVsbCwwLG51bGwsIjY0IixbWyJPcGVyYSBHWCIsIjEzMS4wLjU4NzcuNTciXSxbIk5vdC5BL0JyYW5kIiwiOC4wLjAuMCJdLFsiQ2hyb21pdW0iLCIxNDcuMC43NzI3LjU2Il1dLDBd&amp;abgtt=11&amp;dt=1779687781684&amp;bpp=2&amp;bdt=182&amp;idt=87&amp;shv=r20260520&amp;mjsv=m202605210101&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;cookie=ID%3D470bb24de78b776b%3AT%3D1779670604%3ART%3D1779687773%3AS%3DALNI_Ma23UuW91Wyv6TeinLr6BKtPMjtwA&amp;gpic=UID%3D000013d37799bf3b%3AT%3D1779670604%3ART%3D1779687773%3AS%3DALNI_MagFfvfc0QQ4g7wMn0aQ_hHKTB5nw&amp;eo_id_str=ID%3D80c4e5866155fa95%3AT%3D1779670604%3ART%3D1779687773%3AS%3DAA-AfjZfYux3sIEI-j2RFPh2O3XX&amp;correlator=3861354873074&amp;frm=20&amp;pv=2&amp;u_tz=-420&amp;u_his=6&amp;u_h=1080&amp;u_w=1920&amp;u_ah=1032&amp;u_aw=1920&amp;u_cd=32&amp;u_sd=1&amp;dmc=8&amp;adx=567&amp;ady=238&amp;biw=1863&amp;bih=861&amp;scr_x=0&amp;scr_y=0&amp;eid=31098745%2C42533294%2C95391808%2C95373848&amp;oid=2&amp;pvsid=5497028436314032&amp;tmod=758928820&amp;uas=1&amp;nvt=1&amp;ref=https%3A%2F%2Fminecraftforfreex.com%2F&amp;fc=896&amp;brdim=0%2C0%2C0%2C0%2C1920%2C0%2C1920%2C1032%2C1878%2C861&amp;vis=1&amp;rsz=%7C%7CpeE%7C&amp;abl=CS&amp;pfx=0&amp;fu=0&amp;bc=31&amp;bz=1.02&amp;ifi=1&amp;uci=a!1&amp;fsb=1&amp;dtd=99" data-google-container-id="a!1" tabindex="0" title="Advertisement" aria-label="Advertisement" data-google-query-id="CIixpdHd05QDFT78_QUd3QA97w" data-load-complete="true"></iframe></div></ins>
+                <script>
+                  (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+              </div>
+			  
+              <div class="bbox pad-l text-center">
+			  
+				<div id="eaglerGame"><p>Click the <img style="opacity:0.5;" src="/images/fullscreen.png"> button at the top right of the game to toggle fullscreen on and off.</p><div class="embed-responsive embed-responsive-16by9"><div class="fs fullscreen" style="padding-top:10px;width:42px;float:right;"><div id="fsButton" title="Toggle Fullscreen"></div></div><iframe allow="clipboard-read; clipboard-write" id="game" src="https://eaglercraft1122.pages.dev" scrolling="no" class="fullscreen"></iframe></div><p style="margin-top:12px;margin-bottom:-4px;">Press <kbd>Esc</kbd> to show your cursor.</p></div>
+				
+			  </div>
+			  
+              <div class="img-responsive leaderboard-bot">
+                <!-- MFFX LB2 Game -->
+                <ins class="adsbygoogle hide" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-6919167857759480" data-ad-slot="9409661846" data-adsbygoogle-status="done" data-ad-status="filled"><div id="aswift_1_host" style="border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; height: 90px; width: 728px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block;"><iframe id="aswift_1" name="aswift_1" style="left:0;position:absolute;top:0;border:0;width:728px;height:90px;min-height:auto;max-height:none;min-width:auto;max-width:none;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="728" height="90" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allow="attribution-reporting; run-ad-auction" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-6919167857759480&amp;output=html&amp;h=90&amp;slotname=9409661846&amp;adk=3543649819&amp;adf=1679334248&amp;pi=t.ma~as.9409661846&amp;w=728&amp;lmt=1778712364&amp;format=728x90&amp;url=https%3A%2F%2Fminecraftforfreex.com%2Feaglercraft%2F&amp;asro=0&amp;aiactd=0&amp;aicctd=0&amp;ailctd=0&amp;aimartd=4&amp;aieuf=1&amp;aicrs=1&amp;uach=WyJXaW5kb3dzIiwiMTkuMC4wIiwieDg2IiwiIiwiMTMxLjAuNTg3Ny41NyIsbnVsbCwwLG51bGwsIjY0IixbWyJPcGVyYSBHWCIsIjEzMS4wLjU4NzcuNTciXSxbIk5vdC5BL0JyYW5kIiwiOC4wLjAuMCJdLFsiQ2hyb21pdW0iLCIxNDcuMC43NzI3LjU2Il1dLDBd&amp;abgtt=11&amp;dt=1779687781686&amp;bpp=1&amp;bdt=184&amp;idt=101&amp;shv=r20260520&amp;mjsv=m202605210101&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;cookie=ID%3D470bb24de78b776b%3AT%3D1779670604%3ART%3D1779687773%3AS%3DALNI_Ma23UuW91Wyv6TeinLr6BKtPMjtwA&amp;gpic=UID%3D000013d37799bf3b%3AT%3D1779670604%3ART%3D1779687773%3AS%3DALNI_MagFfvfc0QQ4g7wMn0aQ_hHKTB5nw&amp;eo_id_str=ID%3D80c4e5866155fa95%3AT%3D1779670604%3ART%3D1779687773%3AS%3DAA-AfjZfYux3sIEI-j2RFPh2O3XX&amp;prev_fmts=728x90&amp;correlator=3861354873074&amp;frm=20&amp;pv=1&amp;u_tz=-420&amp;u_his=6&amp;u_h=1080&amp;u_w=1920&amp;u_ah=1032&amp;u_aw=1920&amp;u_cd=32&amp;u_sd=1&amp;dmc=8&amp;adx=567&amp;ady=781&amp;biw=1863&amp;bih=861&amp;scr_x=0&amp;scr_y=0&amp;eid=31098745%2C42533294%2C95391808%2C95373848&amp;oid=2&amp;pvsid=5497028436314032&amp;tmod=758928820&amp;uas=1&amp;nvt=1&amp;ref=https%3A%2F%2Fminecraftforfreex.com%2F&amp;fc=896&amp;brdim=0%2C0%2C0%2C0%2C1920%2C0%2C1920%2C1032%2C1878%2C861&amp;vis=1&amp;rsz=%7C%7CpeE%7C&amp;abl=CS&amp;pfx=0&amp;fu=0&amp;bc=31&amp;bz=1.02&amp;ifi=2&amp;uci=a!2&amp;fsb=1&amp;dtd=105" data-google-container-id="a!2" tabindex="0" title="Advertisement" aria-label="Advertisement" data-google-query-id="CMT3pdHd05QDFcDC_QUdvrIA8A" data-load-complete="true"></iframe></div></ins>
+                <script>
+                  (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+              </div>
+              <div class="bbox pad-l">
+			  
+				<h2>Versions</h2>
+				<p>Above you can simply choose a version and play from your browser right away. Or play <a href="https://eaglercraft.is">Eaglercraft</a> from our other website.</p>
+				<p>If you want to download it locally and play offline, just download the zip file below for your desired version and open the HTML file on your computer.</p>
+				<p> LAN works as well. You don't actually need an internet connection to play unless you want to join a remote server. They come in two flavors, JavaScript and WASM-GC. Javascript can run on lower end hardware and is a little slower than WASM-GC. WASM-GC requires more RAM but runs smoother.</p>
+				
+				<p>EaglercraftX 1.8.8 - <a rel="nofollow" href="https://bafybeihn2tdt55pg5hvju7zu4jkp7mglu3ynisgzmqm7ebkec4qi7lgt4y.ipfs.dweb.link/?filename=EaglercraftX_1.8_JS.zip">JavaScript</a> - <a rel="nofollow" href="https://bafybeialxd4xd7puchx555zqrfmuaz7e7n7nh4crb3sfhvprxedx4c64fq.ipfs.dweb.link/?filename=EaglercraftX_1.8_WASM.zip">WASM-GC</a></p>
+				<p>Experience the most popular and battle-tested version, developed by lax1dude. EaglercraftX 1.8.8 delivers the perfect balance of performance, stability, and compatibility, making it the go-to choice for players worldwide. Whether you're revisiting classic gameplay or hosting your own server, this version just works.</p>
+				
+				<p>Eaglercraft 1.12.2 - <a rel="nofollow" href="https://bafybeid76qzmyszxixt6rdg6qhimpmmhhyhifq5ojh5p6hrdvnqk7hmklu.ipfs.dweb.link/?filename=Eaglercraft_1.12_JS.zip">JavaScript</a> - <a rel="nofollow" href="https://bafybeiazzk6at7cqomk5htkb3uvrvn3oryew7mkclupb7lore3iljpqbg4.ipfs.dweb.link/?filename=Eaglercraft_1.12_WASM.zip">WASM-GC</a></p>
+				<p>Built by PeytonPlayz585, this version has expanded features and modern gameplay improvements, 1.12.2 pushes the boundaries, but it's still evolving. The standard JavaScript build may lag, but with WASM-GC enabled, performance becomes smooth and highly playable.</p>
+				
+				<p>Eaglercraft 1.5.2 - <a rel="nofollow" href="https://bafybeiacatq7ttnmucw25fbjyaldiw2iyzmnib7cayasq7v5a6juwvspyu.ipfs.dweb.link/?filename=Eaglercraft_1.5.2_JS.zip">JavaScript</a></p>
+				
+				<p>Take it back to where it all began with the original Eaglercraft experience, also by lax1dude. Known for its simplicity and rock-solid reliability, this version became widely adopted before Mojang Studios removed the original repositories. While it doesn't have the advanced features of newer releases, it remains a lightweight, dependable classic that still holds up today.</p>
+				
+				<h2>Server</h2>
+				
+				<p>EaglerXServer - <a href="https://github.com/lax1dude/eaglerxserver/releases">Github</a></p>
+				
+				<p>Bring your server to life with EaglerXServer, a powerful plugin supporting Spigot, BungeeCord, and Velocity.</p>
 
-              if (parent && !parent.closed) {
-                parent.postMessage({ type: "EAGLER_IFRAME_READY", token: token }, baseDomain);
-              }
-            })();
-          </script>
-        
-      
-    <script src="blob:https://eaglercraft.com/01e6c52e-9884-4380-9b28-8315268d13e5"></script></body></html>
+				<ul>
+					<li>Connect players from Eaglercraft 1.5.2, 1.8, and 1.12.2</li>
+					<li>Seamlessly integrate with Java Edition servers</li>
+					<li>Built for flexibility and scalability</li>
+				</ul>
+
+				<p>Upgrade now: If you're still using EaglerXBungee or EaglerXVelocity, switching to EaglerXServer is highly recommended for the best performance and compatibility.</p><div class="autors-widget" style="width: 100%; height: auto; clear: both;"><div style="color-scheme: initial !important; forced-color-adjust: initial !important; math-depth: initial !important; position: initial !important; position-anchor: initial !important; text-size-adjust: initial !important; appearance: initial !important; color: initial !important; font: initial !important; font-palette: initial !important; font-synthesis: initial !important; position-area: initial !important; text-orientation: initial !important; text-rendering: initial !important; text-spacing-trim: initial !important; -webkit-font-smoothing: initial !important; -webkit-locale: initial !important; -webkit-text-orientation: initial !important; -webkit-writing-mode: initial !important; writing-mode: initial !important; zoom: initial !important; accent-color: initial !important; place-content: initial !important; place-items: initial !important; place-self: initial !important; alignment-baseline: initial !important; anchor-name: initial !important; anchor-scope: initial !important; animation-composition: initial !important; animation: initial !important; animation-trigger: initial !important; app-region: initial !important; aspect-ratio: initial !important; backdrop-filter: initial !important; backface-visibility: initial !important; background: rgb(255, 255, 255) !important; background-blend-mode: initial !important; baseline-shift: initial !important; baseline-source: initial !important; block-size: initial !important; border-block: initial !important; border: initial !important; border-radius: initial !important; border-collapse: initial !important; border-end-end-radius: initial !important; border-end-start-radius: initial !important; border-inline: initial !important; border-shape: initial !important; border-start-end-radius: initial !important; border-start-start-radius: initial !important; inset: initial !important; box-decoration-break: initial !important; box-shadow: initial !important; break-after: initial !important; break-before: initial !important; break-inside: initial !important; buffered-rendering: initial !important; caption-side: initial !important; caret-animation: initial !important; caret-color: initial !important; caret-shape: initial !important; clear: initial !important; clip: initial !important; clip-path: initial !important; clip-rule: initial !important; color-interpolation: initial !important; color-interpolation-filters: initial !important; color-rendering: initial !important; columns: initial !important; column-fill: initial !important; gap: initial !important; column-rule: initial !important; column-span: initial !important; contain: initial !important; contain-intrinsic-block-size: initial !important; contain-intrinsic-size: initial !important; contain-intrinsic-inline-size: initial !important; container: initial !important; content: initial !important; content-visibility: initial !important; corner-shape: initial !important; corner-block-end-shape: initial !important; corner-block-start-shape: initial !important; counter-increment: initial !important; counter-reset: initial !important; counter-set: initial !important; cursor: initial !important; cx: initial !important; cy: initial !important; d: initial !important; dominant-baseline: initial !important; dynamic-range-limit: initial !important; empty-cells: initial !important; field-sizing: initial !important; fill: initial !important; fill-opacity: initial !important; fill-rule: initial !important; filter: initial !important; flex: initial !important; flex-flow: initial !important; float: initial !important; flood-color: initial !important; flood-opacity: initial !important; grid: initial !important; grid-area: initial !important; height: initial !important; hyphenate-character: initial !important; hyphenate-limit-chars: initial !important; hyphens: initial !important; image-orientation: initial !important; image-rendering: initial !important; initial-letter: initial !important; inline-size: initial !important; inset-block: initial !important; inset-inline: initial !important; interactivity: initial !important; interest-delay: initial !important; interpolate-size: initial !important; isolation: initial !important; letter-spacing: initial !important; lighting-color: initial !important; line-break: initial !important; list-style: initial !important; margin-block: initial !important; margin: initial !important; margin-inline: initial !important; marker: initial !important; mask: initial !important; mask-type: initial !important; math-shift: initial !important; math-style: initial !important; max-block-size: initial !important; max-height: initial !important; max-inline-size: initial !important; max-width: initial !important; min-block-size: initial !important; min-height: initial !important; min-inline-size: initial !important; min-width: initial !important; mix-blend-mode: initial !important; object-fit: initial !important; object-position: initial !important; object-view-box: initial !important; offset: initial !important; opacity: initial !important; order: initial !important; orphans: initial !important; outline: initial !important; outline-offset: initial !important; overflow-anchor: initial !important; overflow-block: initial !important; overflow-clip-margin: initial !important; overflow-inline: initial !important; overflow-wrap: initial !important; overflow: initial !important; overlay: initial !important; overscroll-behavior-block: initial !important; overscroll-behavior-inline: initial !important; overscroll-behavior: initial !important; padding-block: initial !important; padding-inline: initial !important; page: initial !important; page-orientation: initial !important; paint-order: initial !important; perspective: initial !important; perspective-origin: initial !important; pointer-events: initial !important; position-try: initial !important; position-visibility: initial !important; print-color-adjust: initial !important; quotes: initial !important; r: initial !important; reading-flow: initial !important; reading-order: initial !important; resize: initial !important; rotate: initial !important; ruby-align: initial !important; ruby-position: initial !important; rx: initial !important; ry: initial !important; scale: initial !important; scroll-behavior: initial !important; scroll-initial-target: initial !important; scroll-margin-block: initial !important; scroll-margin: initial !important; scroll-margin-inline: initial !important; scroll-marker-group: initial !important; scroll-padding-block: initial !important; scroll-padding: initial !important; scroll-padding-inline: initial !important; scroll-snap-align: initial !important; scroll-snap-stop: initial !important; scroll-snap-type: initial !important; scroll-target-group: initial !important; scroll-timeline: initial !important; scrollbar-color: initial !important; scrollbar-gutter: initial !important; scrollbar-width: initial !important; shape-image-threshold: initial !important; shape-margin: initial !important; shape-outside: initial !important; shape-rendering: initial !important; size: initial !important; speak: initial !important; stop-color: initial !important; stop-opacity: initial !important; stroke: initial !important; stroke-dasharray: initial !important; stroke-dashoffset: initial !important; stroke-linecap: initial !important; stroke-linejoin: initial !important; stroke-miterlimit: initial !important; stroke-opacity: initial !important; stroke-width: initial !important; tab-size: initial !important; table-layout: initial !important; text-align-last: initial !important; text-anchor: initial !important; text-autospace: initial !important; text-box: initial !important; text-combine-upright: initial !important; text-decoration: initial !important; text-decoration-skip-ink: initial !important; text-emphasis: initial !important; text-emphasis-position: initial !important; text-indent: initial !important; text-justify: initial !important; text-overflow: initial !important; text-shadow: initial !important; text-transform: initial !important; text-underline-offset: initial !important; text-underline-position: initial !important; text-wrap: initial !important; timeline-scope: initial !important; timeline-trigger: initial !important; touch-action: initial !important; transform: initial !important; transform-box: initial !important; transform-origin: initial !important; transform-style: initial !important; transition: initial !important; translate: initial !important; trigger-scope: initial !important; user-select: initial !important; vector-effect: initial !important; vertical-align: initial !important; view-timeline: initial !important; view-transition-class: initial !important; view-transition-group: initial !important; view-transition-name: initial !important; view-transition-scope: initial !important; visibility: initial !important; border-spacing: initial !important; -webkit-box-align: initial !important; -webkit-box-decoration-break: initial !important; -webkit-box-direction: initial !important; -webkit-box-flex: initial !important; -webkit-box-ordinal-group: initial !important; -webkit-box-orient: initial !important; -webkit-box-pack: initial !important; -webkit-box-reflect: initial !important; -webkit-line-break: initial !important; -webkit-line-clamp: initial !important; -webkit-mask-box-image: initial !important; -webkit-rtl-ordering: initial !important; -webkit-ruby-position: initial !important; -webkit-tap-highlight-color: initial !important; -webkit-text-combine: initial !important; -webkit-text-decorations-in-effect: initial !important; -webkit-text-security: initial !important; -webkit-text-stroke: initial !important; -webkit-user-drag: initial !important; white-space-collapse: initial !important; widows: initial !important; will-change: initial !important; word-break: initial !important; word-spacing: initial !important; x: initial !important; y: initial !important; z-index: initial !important; -webkit-text-fill-color: unset !important; width: 100% !important; text-align: center !important; display: block !important; padding: 5px 5px 2px !important; box-sizing: border-box !important;"><div style="color-scheme: initial !important; forced-color-adjust: initial !important; math-depth: initial !important; position: initial !important; position-anchor: initial !important; text-size-adjust: initial !important; appearance: initial !important; color: initial !important; font: initial !important; font-palette: initial !important; font-synthesis: initial !important; position-area: initial !important; text-orientation: initial !important; text-rendering: initial !important; text-spacing-trim: initial !important; -webkit-font-smoothing: initial !important; -webkit-locale: initial !important; -webkit-text-orientation: initial !important; -webkit-writing-mode: initial !important; writing-mode: initial !important; zoom: initial !important; accent-color: initial !important; place-content: initial !important; place-items: initial !important; place-self: initial !important; alignment-baseline: initial !important; anchor-name: initial !important; anchor-scope: initial !important; animation-composition: initial !important; animation: initial !important; animation-trigger: initial !important; app-region: initial !important; aspect-ratio: initial !important; backdrop-filter: initial !important; backface-visibility: initial !important; background: initial !important; background-blend-mode: initial !important; baseline-shift: initial !important; baseline-source: initial !important; block-size: initial !important; border-block: initial !important; border: initial !important; border-radius: initial !important; border-collapse: initial !important; border-end-end-radius: initial !important; border-end-start-radius: initial !important; border-inline: initial !important; border-shape: initial !important; border-start-end-radius: initial !important; border-start-start-radius: initial !important; inset: initial !important; box-decoration-break: initial !important; box-shadow: initial !important; box-sizing: initial !important; break-after: initial !important; break-before: initial !important; break-inside: initial !important; buffered-rendering: initial !important; caption-side: initial !important; caret-animation: initial !important; caret-color: initial !important; caret-shape: initial !important; clear: initial !important; clip: initial !important; clip-path: initial !important; clip-rule: initial !important; color-interpolation: initial !important; color-interpolation-filters: initial !important; color-rendering: initial !important; columns: initial !important; column-fill: initial !important; gap: initial !important; column-rule: initial !important; column-span: initial !important; contain: initial !important; contain-intrinsic-block-size: initial !important; contain-intrinsic-size: initial !important; contain-intrinsic-inline-size: initial !important; container: initial !important; content: initial !important; content-visibility: initial !important; corner-shape: initial !important; corner-block-end-shape: initial !important; corner-block-start-shape: initial !important; counter-increment: initial !important; counter-reset: initial !important; counter-set: initial !important; cursor: initial !important; cx: initial !important; cy: initial !important; d: initial !important; display: initial !important; dominant-baseline: initial !important; dynamic-range-limit: initial !important; empty-cells: initial !important; field-sizing: initial !important; fill: initial !important; fill-opacity: initial !important; fill-rule: initial !important; filter: initial !important; flex: initial !important; flex-flow: initial !important; float: initial !important; flood-color: initial !important; flood-opacity: initial !important; grid: initial !important; grid-area: initial !important; height: initial !important; hyphenate-character: initial !important; hyphenate-limit-chars: initial !important; hyphens: initial !important; image-orientation: initial !important; image-rendering: initial !important; initial-letter: initial !important; inline-size: initial !important; inset-block: initial !important; inset-inline: initial !important; interactivity: initial !important; interest-delay: initial !important; interpolate-size: initial !important; isolation: initial !important; letter-spacing: initial !important; lighting-color: initial !important; line-break: initial !important; list-style: initial !important; margin-block: initial !important; margin-inline: initial !important; marker: initial !important; mask: initial !important; mask-type: initial !important; math-shift: initial !important; math-style: initial !important; max-block-size: initial !important; max-height: initial !important; max-inline-size: initial !important; min-block-size: initial !important; min-height: initial !important; min-inline-size: initial !important; min-width: initial !important; mix-blend-mode: initial !important; object-fit: initial !important; object-position: initial !important; object-view-box: initial !important; offset: initial !important; opacity: initial !important; order: initial !important; orphans: initial !important; outline: initial !important; outline-offset: initial !important; overflow-anchor: initial !important; overflow-block: initial !important; overflow-clip-margin: initial !important; overflow-inline: initial !important; overflow-wrap: initial !important; overflow: initial !important; overlay: initial !important; overscroll-behavior-block: initial !important; overscroll-behavior-inline: initial !important; overscroll-behavior: initial !important; padding-block: initial !important; padding: initial !important; padding-inline: initial !important; page: initial !important; page-orientation: initial !important; paint-order: initial !important; perspective: initial !important; perspective-origin: initial !important; pointer-events: initial !important; position-try: initial !important; position-visibility: initial !important; print-color-adjust: initial !important; quotes: initial !important; r: initial !important; reading-flow: initial !important; reading-order: initial !important; resize: initial !important; rotate: initial !important; ruby-align: initial !important; ruby-position: initial !important; rx: initial !important; ry: initial !important; scale: initial !important; scroll-behavior: initial !important; scroll-initial-target: initial !important; scroll-margin-block: initial !important; scroll-margin: initial !important; scroll-margin-inline: initial !important; scroll-marker-group: initial !important; scroll-padding-block: initial !important; scroll-padding: initial !important; scroll-padding-inline: initial !important; scroll-snap-align: initial !important; scroll-snap-stop: initial !important; scroll-snap-type: initial !important; scroll-target-group: initial !important; scroll-timeline: initial !important; scrollbar-color: initial !important; scrollbar-gutter: initial !important; scrollbar-width: initial !important; shape-image-threshold: initial !important; shape-margin: initial !important; shape-outside: initial !important; shape-rendering: initial !important; size: initial !important; speak: initial !important; stop-color: initial !important; stop-opacity: initial !important; stroke: initial !important; stroke-dasharray: initial !important; stroke-dashoffset: initial !important; stroke-linecap: initial !important; stroke-linejoin: initial !important; stroke-miterlimit: initial !important; stroke-opacity: initial !important; stroke-width: initial !important; tab-size: initial !important; table-layout: initial !important; text-align: initial !important; text-align-last: initial !important; text-anchor: initial !important; text-autospace: initial !important; text-box: initial !important; text-combine-upright: initial !important; text-decoration: initial !important; text-decoration-skip-ink: initial !important; text-emphasis: initial !important; text-emphasis-position: initial !important; text-indent: initial !important; text-justify: initial !important; text-overflow: initial !important; text-shadow: initial !important; text-transform: initial !important; text-underline-offset: initial !important; text-underline-position: initial !important; text-wrap: initial !important; timeline-scope: initial !important; timeline-trigger: initial !important; touch-action: initial !important; transform: initial !important; transform-box: initial !important; transform-origin: initial !important; transform-style: initial !important; transition: initial !important; translate: initial !important; trigger-scope: initial !important; user-select: initial !important; vector-effect: initial !important; vertical-align: initial !important; view-timeline: initial !important; view-transition-class: initial !important; view-transition-group: initial !important; view-transition-name: initial !important; view-transition-scope: initial !important; visibility: initial !important; border-spacing: initial !important; -webkit-box-align: initial !important; -webkit-box-decoration-break: initial !important; -webkit-box-direction: initial !important; -webkit-box-flex: initial !important; -webkit-box-ordinal-group: initial !important; -webkit-box-orient: initial !important; -webkit-box-pack: initial !important; -webkit-box-reflect: initial !important; -webkit-line-break: initial !important; -webkit-line-clamp: initial !important; -webkit-mask-box-image: initial !important; -webkit-rtl-ordering: initial !important; -webkit-ruby-position: initial !important; -webkit-tap-highlight-color: initial !important; -webkit-text-combine: initial !important; -webkit-text-decorations-in-effect: initial !important; -webkit-text-security: initial !important; -webkit-text-stroke: initial !important; -webkit-user-drag: initial !important; white-space-collapse: initial !important; widows: initial !important; will-change: initial !important; word-break: initial !important; word-spacing: initial !important; x: initial !important; y: initial !important; z-index: initial !important; -webkit-text-fill-color: unset !important; width: 100% !important; max-width: 1000px !important; margin: auto !important;"><div id="autors-container-0" style="height: auto;"><iframe frameborder="0" marginwidth="0" marginheight="0" allowtransparency="true" scrolling="no" width="100%" name="{&quot;name&quot;:&quot;master-1&quot;,&quot;master-1&quot;:{&quot;container&quot;:&quot;autors-container-0&quot;,&quot;styleId&quot;:&quot;5134551505&quot;,&quot;channel&quot;:&quot;AutoRsVariant&quot;,&quot;cx&quot;:&quot;r-7a97ac87e2585d730&quot;,&quot;domainName&quot;:&quot;minecraftforfreex.com&quot;,&quot;fexp&quot;:&quot;31098745,42533294,95391808,95373848,21404,17300003,17301437,17301438,17301442,17301266,72717107,17301544&quot;,&quot;masterNumber&quot;:1,&quot;number&quot;:0,&quot;pubId&quot;:&quot;pub-6919167857759480&quot;,&quot;role&quot;:&quot;m&quot;,&quot;sct&quot;:&quot;ID=e2568655ee98108d:T=1779670605:RT=1779670605:S=ALNI_MYHesV_d2rxy3sRH0zcPSG9wPnXVA&quot;,&quot;sc_status&quot;:6,&quot;hl&quot;:&quot;en&quot;,&quot;resultsPageBaseUrl&quot;:&quot;http://google.com&quot;,&quot;resultsPageQueryParam&quot;:&quot;q&quot;,&quot;relatedSearchUseResultCallback&quot;:true,&quot;ie&quot;:&quot;UTF-8&quot;,&quot;maxTop&quot;:0,&quot;minTop&quot;:0,&quot;oe&quot;:&quot;UTF-8&quot;,&quot;relatedSearches&quot;:5,&quot;type&quot;:&quot;relatedsearch&quot;,&quot;linkTarget&quot;:&quot;_top&quot;,&quot;relatedSearchTargeting&quot;:&quot;c&quot;}}" id="master-1" src="https://syndicatedsearch.goog/afs/ads?sjk=zqDURKk4QLO9ZfVqoj4%2BpA%3D%3D&amp;psid=5134551505&amp;channel=AutoRsVariant&amp;cx=r-7a97ac87e2585d730&amp;fexp=31098745%2C42533294%2C95391808%2C95373848%2C21404%2C17300003%2C17301437%2C17301438%2C17301442%2C17301266%2C72717107%2C17301544&amp;client=pub-6919167857759480&amp;r=m&amp;sct=ID%3De2568655ee98108d%3AT%3D1779670605%3ART%3D1779670605%3AS%3DALNI_MYHesV_d2rxy3sRH0zcPSG9wPnXVA&amp;sc_status=6&amp;hl=en&amp;rpbu=http%3A%2F%2Fgoogle.com&amp;rpqp=q&amp;type=3&amp;rs_tt=c&amp;oe=UTF-8&amp;ie=UTF-8&amp;format=r5&amp;nocache=9111779687781978&amp;num=0&amp;output=afd_ads&amp;domain_name=minecraftforfreex.com&amp;v=3&amp;bsl=10&amp;pac=0&amp;u_his=7&amp;u_tz=-420&amp;dt=1779687781979&amp;u_w=1920&amp;u_h=1080&amp;biw=1863&amp;bih=861&amp;psw=1863&amp;psh=861&amp;frm=0&amp;uio=-&amp;cont=autors-container-0&amp;drt=0&amp;jsid=csa&amp;nfp=1&amp;jsv=913690580&amp;rurl=https%3A%2F%2Fminecraftforfreex.com%2Feaglercraft%2F&amp;referer=https%3A%2F%2Fminecraftforfreex.com%2F&amp;lle=1" data-observe="1" allow="attribution-reporting" style="visibility: visible; height: 348px; display: block;" data-lle="1" title=""></iframe></div></div></div></div>
+
+				<p><a href="#">Tutorials</a> on how to setup servers and stuff. (Under construction)</p>
+				
+				<p>Here's an <a href="/eaglercraft/faq-old/">old FAQ</a> for version 1.5.2 by ayonull for reference. Many things still apply to Eaglercraft 1.8.8 (EaglercraftX).</p>
+				
+                <h2>About Eaglercraft</h2>
+				
+                <p>Eaglercraft and EaglercraftX is a Minecraft 1.5.2 and 1.8.8 Javascript port, respectively, authored by LAX1DUDE.</p>				
+
+				<h3>Before Eaglercraft</h3>
+
+				<p>In the early days of Minecraft, Mojang utilized Java applets to embed their game onto a browser. This allowed Minecraft 1.5.2 to be played on most web browsers, for free. However, Java applets became obsolete over time and wouldn't be allowed to run on modern browsers. This also marked the transition from Mojang's embedded web browser game onto executable files that can run on devices instead. A popular way even today is to use Internet Explorer to run the old Minecraft 1.5.2 applet, but it's inconvenient since you'd need to configure it a certain way.</p>
+
+				<h3>A New Player Has Entered the Game</h3>
+
+				<p>From 2021 to 2022, an individual going by the alias LAX1DUDE wanted to port Minecraft over to a modern web browser, by way of Javascript and HTML5. He wanted a challenge and devoted a lot of time reverse engineering the game. He eventually released Eaglercraft, based on Minecraft 1.5.2. At the time it only included Multiplayer, which was more than enough to get people interested in playing.</p>
+
+				<img class="img-responsive" src="/images/eaglercraft.png"><br>
+
+				<p>Its popularity spread on TikTok, where users would post how to play Eaglercraft on a low-end device such as a Chromebook. These clips would get millions of views, and promoted several popular Eaglercraft servers as well. This was especially useful in schools that deploy chromebooks and similar hardware. Peak hours of gameplay would be on school lunch break, and the several hours after school. The most attractive part of Eaglercraft was the ability to run and join a custom server, which had its own communities.</p>
+
+				<p>In September of 2022, LAX1DUDE added singleplayer mode. Players could then play survival mode, creative mode, or hardcore mode with local worlds.</p>
+				
+				<h3>EaglercraftX</h3>
+
+				<p>As a nice Christmas gift, LAX1DUDE and ayunami2000 released EaglercraftX, based on Minecraft 1.8.8 on December 26th. He only released the tools to decompile Minecraft on Github, instead of the actual game files.</p>
+
+				<img class="img-responsive" src="/images/eaglercraftx.png"><br>
+
+				<p>While development has virtually stopped due to legal concerns, the game still lives on behind the scenes. By the way, we don't host any game files!</p>
+
+                <h2>More Games</h2>
+				
+                <p>Check out <a href="/minecraft/">Minecraft 1.5.2</a> and <a href="/classicube/">ClassiCube</a>.</p>
+				
+              </div>
+            </div>
+            <div class="col-md-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="footer hide">
+      <div class="container ftext">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+          <p>
+            <span class="highlight">We are not affiliated with Minecraft.net</span>
+            <br>
+            <br>
+            <strong>
+              <a href="https://minecraftforfreex.com/">MinecraftForFreeX.com</a> | <a href="/about/">About</a> | <a href="/contact/">Contact Us</a> | <a href="/privacy/">Privacy Policy</a>
+            </strong>
+          </p>
+          <div class="col-md-2"></div>
+        </div>
+      </div>
+    </footer>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="https://minecraftforfreex.com/js/load.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;6701ed13609941ef90de9deda5a0f9a5&quot;,&quot;r&quot;:1,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
+
+
+<div id="h93745189219248skasdhk" style="display: none;"></div><ins class="adsbygoogle adsbygoogle-noablate hide" data-ad-hi="true" data-adsbygoogle-status="done" style="display: none !important;" data-ad-status="unfilled"><div id="aswift_2_host" style="border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; height: 0px; width: 0px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block;"><iframe id="aswift_2" name="aswift_2" style="left:0;position:absolute;top:0;border:0;width:undefinedpx;height:undefinedpx;min-height:auto;max-height:none;min-width:auto;max-width:none;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allow="attribution-reporting; run-ad-auction" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-6919167857759480&amp;output=html&amp;adk=1812271804&amp;adf=3025194257&amp;lmt=1778712364&amp;plaf=7%3A2&amp;plat=3%3A128%2C4%3A128%2C9%3A134250504%2C16%3A8388608%2C17%3A32%2C24%3A32%2C25%3A32%2C30%3A1081344%2C32%3A32%2C41%3A32%2C42%3A32%2C43%3A32&amp;format=0x0&amp;url=https%3A%2F%2Fminecraftforfreex.com%2Feaglercraft%2F&amp;pra=7&amp;asro=0&amp;itsi=0&amp;aiactd=0&amp;aicctd=0&amp;ailctd=0&amp;aimartd=4&amp;aieuf=1&amp;aicrs=1&amp;uach=WyJXaW5kb3dzIiwiMTkuMC4wIiwieDg2IiwiIiwiMTMxLjAuNTg3Ny41NyIsbnVsbCwwLG51bGwsIjY0IixbWyJPcGVyYSBHWCIsIjEzMS4wLjU4NzcuNTciXSxbIk5vdC5BL0JyYW5kIiwiOC4wLjAuMCJdLFsiQ2hyb21pdW0iLCIxNDcuMC43NzI3LjU2Il1dLDBd&amp;abgtt=11&amp;dt=1779687781687&amp;bpp=1&amp;bdt=185&amp;idt=109&amp;shv=r20260520&amp;mjsv=m202605210101&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;cookie=ID%3D470bb24de78b776b%3AT%3D1779670604%3ART%3D1779687773%3AS%3DALNI_Ma23UuW91Wyv6TeinLr6BKtPMjtwA&amp;gpic=UID%3D000013d37799bf3b%3AT%3D1779670604%3ART%3D1779687773%3AS%3DALNI_MagFfvfc0QQ4g7wMn0aQ_hHKTB5nw&amp;eo_id_str=ID%3D80c4e5866155fa95%3AT%3D1779670604%3ART%3D1779687773%3AS%3DAA-AfjZfYux3sIEI-j2RFPh2O3XX&amp;prev_fmts=728x90%2C728x90&amp;nras=1&amp;correlator=3861354873074&amp;frm=20&amp;pv=1&amp;u_tz=-420&amp;u_his=6&amp;u_h=1080&amp;u_w=1920&amp;u_ah=1032&amp;u_aw=1920&amp;u_cd=32&amp;u_sd=1&amp;dmc=8&amp;adx=-12245933&amp;ady=-12245933&amp;biw=1863&amp;bih=861&amp;scr_x=0&amp;scr_y=0&amp;eid=31098745%2C42533294%2C95391808%2C95373848&amp;oid=2&amp;pvsid=5497028436314032&amp;tmod=758928820&amp;uas=1&amp;nvt=1&amp;fsapi=1&amp;ref=https%3A%2F%2Fminecraftforfreex.com%2F&amp;fc=896&amp;brdim=0%2C0%2C0%2C0%2C1920%2C0%2C1920%2C1032%2C1878%2C861&amp;vis=1&amp;rsz=%7C%7Cs%7C&amp;abl=NS&amp;fu=32768&amp;bc=31&amp;bz=1.02&amp;ifi=3&amp;uci=a!3&amp;fsb=1&amp;dtd=116" data-google-container-id="a!3" tabindex="0" title="Advertisement" aria-label="Advertisement" data-load-complete="true"></iframe></div></ins><iframe src="//undefined/VVJBVGE0MCI5XjRvI3IUJz58cVMTd3MSBWc0OTYOYWB4MA05Oi56Ajk9NDAHJz0vIE87NzVxUxMrFBAvAgByOxsNFiY8MwYAIBkPJRYgBS8jNiphUwQrED0pEmMkBBg+NAxkJGYbEGBTDREQPCIRBBYYDD4IEWVUIh4QP0RnFBkHO2MRKSwNFDsULCo4Ji8eMwwHBwcobBosZAQMBQQDLANiOTEJbTgHOTAQFzgFNg8TEB8rF2YUEjdsOyIXOCcKcx4WGDsbNy8DYnAxCiFgFD4oOQBzBTccKxscMQMlMhgJDGoUOi9kAgYBBQ8/Cx04FyEpGAkEYhkXTBBiGWYoER0FGgcMNQ86BWQAJhIMABQZZigRGxJgNA81JS4FETpwFTYMd3MSNRIDIDdSAxkMASw4GTlsDwM4ECckLAMWDiATAhgjM2E2BCxQFAUbIiQBOgkbGCE0GDojLzYUO1kCOHE9OWcbBRkyHAgOZRlwYAcNCj01FBBVZBQVZTY2YRRsOAQ2KTU0JXdzFiBmOnIMUxwWCwc4Nh8UEURnFBg/BgIQLAIWAxUMEgJmBAoEURg5GD8GAhMsAlMDFQAwOzg+CnkFPggzMAohOAI5VC8DLBUpNzwTFzgEAC9yCyY9LyRcJR4XAAMeKBllAzkW" style="display: none;"></iframe><audio class="audio-output" style="display: none;"></audio><div id="volume-booster-visusalizer">
+                    <div class="sound">
+                        <div class="sound-icon"></div>
+                        <div class="sound-wave sound-wave_one"></div>
+                        <div class="sound-wave sound-wave_two"></div>
+                        <div class="sound-wave sound-wave_three"></div>
+                    </div>
+                    <div class="segments-box">
+                        <div data-range="1-20" class="segment"><span></span></div>
+                        <div data-range="21-40" class="segment"><span></span></div>
+                        <div data-range="41-60" class="segment"><span></span></div>
+                        <div data-range="61-80" class="segment"><span></span></div>
+                        <div data-range="81-100" class="segment"><span></span></div>
+                    </div>
+                </div><iframe name="googlefcPresent" style="display: none; width: 0px; height: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; z-index: -1000; left: -1000px; top: -1000px;"></iframe><div style="color-scheme: initial !important; forced-color-adjust: initial !important; math-depth: initial !important; position: initial !important; position-anchor: initial !important; text-size-adjust: initial !important; appearance: initial !important; color: initial !important; font: initial !important; font-palette: initial !important; font-synthesis: initial !important; position-area: initial !important; text-orientation: initial !important; text-rendering: initial !important; text-spacing-trim: initial !important; -webkit-font-smoothing: initial !important; -webkit-locale: initial !important; -webkit-text-orientation: initial !important; -webkit-writing-mode: initial !important; writing-mode: initial !important; zoom: initial !important; accent-color: initial !important; place-content: initial !important; place-items: initial !important; place-self: initial !important; alignment-baseline: initial !important; anchor-name: initial !important; anchor-scope: initial !important; animation-composition: initial !important; animation: initial !important; animation-trigger: initial !important; app-region: initial !important; aspect-ratio: initial !important; backdrop-filter: initial !important; backface-visibility: initial !important; background: initial !important; background-blend-mode: initial !important; baseline-shift: initial !important; baseline-source: initial !important; block-size: initial !important; border-block: initial !important; border: initial !important; border-radius: initial !important; border-collapse: initial !important; border-end-end-radius: initial !important; border-end-start-radius: initial !important; border-inline: initial !important; border-shape: initial !important; border-start-end-radius: initial !important; border-start-start-radius: initial !important; inset: initial !important; box-decoration-break: initial !important; box-shadow: initial !important; box-sizing: initial !important; break-after: initial !important; break-before: initial !important; break-inside: initial !important; buffered-rendering: initial !important; caption-side: initial !important; caret-animation: initial !important; caret-color: initial !important; caret-shape: initial !important; clear: initial !important; clip: initial !important; clip-path: initial !important; clip-rule: initial !important; color-interpolation: initial !important; color-interpolation-filters: initial !important; color-rendering: initial !important; columns: initial !important; column-fill: initial !important; gap: initial !important; column-rule: initial !important; column-span: initial !important; contain: initial !important; contain-intrinsic-block-size: initial !important; contain-intrinsic-size: initial !important; contain-intrinsic-inline-size: initial !important; container: initial !important; content: initial !important; content-visibility: initial !important; corner-shape: initial !important; corner-block-end-shape: initial !important; corner-block-start-shape: initial !important; counter-increment: initial !important; counter-reset: initial !important; counter-set: initial !important; cursor: initial !important; cx: initial !important; cy: initial !important; d: initial !important; display: initial !important; dominant-baseline: initial !important; dynamic-range-limit: initial !important; empty-cells: initial !important; field-sizing: initial !important; fill: initial !important; fill-opacity: initial !important; fill-rule: initial !important; filter: initial !important; flex: initial !important; flex-flow: initial !important; float: initial !important; flood-color: initial !important; flood-opacity: initial !important; grid: initial !important; grid-area: initial !important; height: initial !important; hyphenate-character: initial !important; hyphenate-limit-chars: initial !important; hyphens: initial !important; image-orientation: initial !important; image-rendering: initial !important; initial-letter: initial !important; inline-size: initial !important; inset-block: initial !important; inset-inline: initial !important; interactivity: initial !important; interest-delay: initial !important; interpolate-size: initial !important; isolation: initial !important; letter-spacing: initial !important; lighting-color: initial !important; line-break: initial !important; list-style: initial !important; margin-block: initial !important; margin: initial !important; margin-inline: initial !important; marker: initial !important; mask: initial !important; mask-type: initial !important; math-shift: initial !important; math-style: initial !important; max-block-size: initial !important; max-height: initial !important; max-inline-size: initial !important; max-width: initial !important; min-block-size: initial !important; min-height: initial !important; min-inline-size: initial !important; min-width: initial !important; mix-blend-mode: initial !important; object-fit: initial !important; object-position: initial !important; object-view-box: initial !important; offset: initial !important; opacity: initial !important; order: initial !important; orphans: initial !important; outline: initial !important; outline-offset: initial !important; overflow-anchor: initial !important; overflow-block: initial !important; overflow-clip-margin: initial !important; overflow-inline: initial !important; overflow-wrap: initial !important; overflow: initial !important; overlay: initial !important; overscroll-behavior-block: initial !important; overscroll-behavior-inline: initial !important; overscroll-behavior: initial !important; padding-block: initial !important; padding: initial !important; padding-inline: initial !important; page: initial !important; page-orientation: initial !important; paint-order: initial !important; perspective: initial !important; perspective-origin: initial !important; pointer-events: initial !important; position-try: initial !important; position-visibility: initial !important; print-color-adjust: initial !important; quotes: initial !important; r: initial !important; reading-flow: initial !important; reading-order: initial !important; resize: initial !important; rotate: initial !important; ruby-align: initial !important; ruby-position: initial !important; rx: initial !important; ry: initial !important; scale: initial !important; scroll-behavior: initial !important; scroll-initial-target: initial !important; scroll-margin-block: initial !important; scroll-margin: initial !important; scroll-margin-inline: initial !important; scroll-marker-group: initial !important; scroll-padding-block: initial !important; scroll-padding: initial !important; scroll-padding-inline: initial !important; scroll-snap-align: initial !important; scroll-snap-stop: initial !important; scroll-snap-type: initial !important; scroll-target-group: initial !important; scroll-timeline: initial !important; scrollbar-color: initial !important; scrollbar-gutter: initial !important; scrollbar-width: initial !important; shape-image-threshold: initial !important; shape-margin: initial !important; shape-outside: initial !important; shape-rendering: initial !important; size: initial !important; speak: initial !important; stop-color: initial !important; stop-opacity: initial !important; stroke: initial !important; stroke-dasharray: initial !important; stroke-dashoffset: initial !important; stroke-linecap: initial !important; stroke-linejoin: initial !important; stroke-miterlimit: initial !important; stroke-opacity: initial !important; stroke-width: initial !important; tab-size: initial !important; table-layout: initial !important; text-align: initial !important; text-align-last: initial !important; text-anchor: initial !important; text-autospace: initial !important; text-box: initial !important; text-combine-upright: initial !important; text-decoration: initial !important; text-decoration-skip-ink: initial !important; text-emphasis: initial !important; text-emphasis-position: initial !important; text-indent: initial !important; text-justify: initial !important; text-overflow: initial !important; text-shadow: initial !important; text-transform: initial !important; text-underline-offset: initial !important; text-underline-position: initial !important; text-wrap: initial !important; timeline-scope: initial !important; timeline-trigger: initial !important; touch-action: initial !important; transform: initial !important; transform-box: initial !important; transform-origin: initial !important; transform-style: initial !important; transition: initial !important; translate: initial !important; trigger-scope: initial !important; user-select: initial !important; vector-effect: initial !important; vertical-align: initial !important; view-timeline: initial !important; view-transition-class: initial !important; view-transition-group: initial !important; view-transition-name: initial !important; view-transition-scope: initial !important; visibility: initial !important; border-spacing: initial !important; -webkit-box-align: initial !important; -webkit-box-decoration-break: initial !important; -webkit-box-direction: initial !important; -webkit-box-flex: initial !important; -webkit-box-ordinal-group: initial !important; -webkit-box-orient: initial !important; -webkit-box-pack: initial !important; -webkit-box-reflect: initial !important; -webkit-line-break: initial !important; -webkit-line-clamp: initial !important; -webkit-mask-box-image: initial !important; -webkit-rtl-ordering: initial !important; -webkit-ruby-position: initial !important; -webkit-tap-highlight-color: initial !important; -webkit-text-combine: initial !important; -webkit-text-decorations-in-effect: initial !important; -webkit-text-security: initial !important; -webkit-text-stroke: initial !important; -webkit-user-drag: initial !important; white-space-collapse: initial !important; widows: initial !important; width: initial !important; will-change: initial !important; word-break: initial !important; word-spacing: initial !important; x: initial !important; y: initial !important; z-index: initial !important; -webkit-text-fill-color: unset !important;"></div><iframe name="__tcfapiLocator" src="about:blank" style="display: none; width: 0px; height: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; z-index: -1000; left: -1000px; top: -1000px;"></iframe><iframe name="googlefcInactive" src="about:blank" style="display: none; width: 0px; height: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; z-index: -1000; left: -1000px; top: -1000px;"></iframe><iframe name="googlefcLoaded" src="about:blank" style="display: none; width: 0px; height: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; z-index: -1000; left: -1000px; top: -1000px;"></iframe><iframe src="https://www.google.com/recaptcha/api2/aframe" width="0" height="0" style="display: none;"></iframe></body><iframe id="google_esf" name="google_esf" src="https://googleads.g.doubleclick.net/pagead/html/r20260520/r20190131/zrt_lookup_fy2021.html" style="display: none;"></iframe></html>

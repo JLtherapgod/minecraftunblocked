@@ -1,0 +1,126 @@
+<html><head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+          <title>Release 1.12.2</title>
+          <link rel="icon" href="/favicon.png">
+          <style>
+            body, html { margin: 0px; width: 100%; height: 100%; overflow: hidden; background-color: black; }
+            #game_frame { width: 100vw; height: 100vh; }
+          </style>
+          
+        </head>
+        <body>
+          <div id="game_frame" style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" class="_eaglercraftX_root_element"><div class="_eaglercraftX_wrapper_element" style="position: relative; width: 100%; height: 100%; overflow: hidden;"><canvas class="_eaglercraftX_canvas_element" width="1280" height="658" style="width: 100%; height: 100%; z-index: 1; image-rendering: pixelated; touch-action: pan-x pan-y; -webkit-tap-highlight-color: rgba(255, 255, 255, 0); cursor: default;"></canvas></div></div>
+          <script>
+            (function() {
+              const baseDomain = "https://eaglercraft.com";
+              const prefix = "Eaglercraft 1.12_";
+              const raw = window.localStorage;
+              
+              const proxy = new Proxy(raw, {
+                get(t, p) {
+                  if (p === "setItem") return (k, v) => t.setItem(prefix + k, v);
+                  if (p === "getItem") return (k) => t.getItem(prefix + k);
+                  if (p === "removeItem") return (k) => t.removeItem(prefix + k);
+                  if (p === "clear") return () => {
+                    Object.keys(t).forEach(k => { if(k.startsWith(prefix)) t.removeItem(k); });
+                  };
+                  if (typeof p === "string" && !t[p]) return t.getItem(prefix + p);
+                  return t[p];
+                },
+                set(t, p, v) { if (typeof p === "string") { t.setItem(prefix + p, String(v)); return true; } return false; }
+              });
+              Object.defineProperty(window, "localStorage", { value: proxy });
+              
+              window.addEventListener("message", (e) => {
+                if (e.data.type === "EAGLER_TOGGLE_FULLSCREEN") {
+                  const el = document.documentElement;
+                  if (!document.fullscreenElement) {
+                    el.requestFullscreen().catch(err => console.error("Fullscreen Error:", err));
+                  } else {
+                    document.exitFullscreen();
+                  }
+                }
+              });
+
+              const token = "3edd82a1-56d9-410c-ad66-a8bfe041a6d4";
+              const parent = window.opener;
+              
+              
+              
+              // idle screen tracking
+              const idleScreens = ["net.minecraft.client.gui.GuiMainMenu","net.minecraft.client.gui.GuiMultiplayer","net.minecraft.client.gui.GuiSelectWorld","net.minecraft.client.gui.GuiDisconnected"];
+              const maxIdleTime = 3600000;
+              let idleTimeout = null;
+              
+              window.addEventListener("gameScreenChanged", (event) => {
+                if (event.detail && event.detail.screenName) {
+                  const screenName = event.detail.screenName;
+                  
+                  if (parent && !parent.closed) {
+                    parent.postMessage({ 
+                      type: "gameScreenChanged", 
+                      screenName: screenName 
+                    }, baseDomain);
+                  }
+                  
+                  if (idleTimeout) {
+                    clearTimeout(idleTimeout);
+                    idleTimeout = null;
+                  }
+                  
+                  if (idleScreens.includes(screenName)) {
+                    idleTimeout = setTimeout(() => {
+                      window.onbeforeunload = null;
+                      window.location.href = baseDomain;
+                      if (parent && !parent.closed) {
+                        parent.postMessage({ type: "gameClientIdleClosed", screenName: screenName }, baseDomain);
+                      }
+                    }, maxIdleTime);
+                  }
+                }
+              });
+
+              // ws stuff
+              const wsUrl = "wss://eaglercraft-counter.eaglercraft-99f.workers.dev/api/live-player-count/ws?role=player";
+              let wsAttempts = 0;
+              function connectWS() {
+                const ws = new WebSocket(wsUrl);
+                ws.onopen = () => { wsAttempts = 0; };
+                ws.onmessage = (e) => {
+                  try {
+                    const data = JSON.parse(e.data);
+                    if (data.type === "ping") {
+                      ws.send(JSON.stringify({ type: "pong" }));
+                    }
+                  } catch(err){}
+                };
+                ws.onclose = () => {
+                  const delay = Math.min(
+                    1000 * Math.pow(2, wsAttempts),
+                    30000
+                  );
+                  wsAttempts++;
+                  setTimeout(connectWS, delay);
+                };
+              }
+              connectWS();
+              
+              window.addEventListener("message", (e) => {
+                if (e.data.type === "EAGLER_LAUNCH") {
+                  const s = document.createElement("script");
+                  s.src = "blob:https://eaglercraft.com/bb906b6f-7d6f-4ab9-a5d1-712a66e8440b";
+                  
+                  document.body.appendChild(s);
+                  
+                  window.dispatchEvent(new Event("boot_client"));
+                }
+              });
+
+              if (parent && !parent.closed) {
+                parent.postMessage({ type: "EAGLER_IFRAME_READY", token: token }, baseDomain);
+              }
+            })();
+          </script>
+        
+      
+    <script src="blob:https://eaglercraft.com/bb906b6f-7d6f-4ab9-a5d1-712a66e8440b"></script></body></html>
